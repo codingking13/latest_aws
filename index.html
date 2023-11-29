@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+    <button id="visualizeButton">Visualize CSV Data</button>
+
+    <div id="chartContainer"></div>
+
+    <script>
+        document.getElementById('visualizeButton').addEventListener('click', function() {
+            visualizeCSVData();
+        });
+
+        function visualizeCSVData() {
+            // Replace 'YOUR_S3_BUCKET' and 'YOUR_CSV_FILE' with your actual S3 bucket and CSV file path
+            var s3Url = 'https://YOUR_S3_BUCKET.s3.amazonaws.com/YOUR_CSV_FILE.csv';
+
+            // Fetch CSV data from S3
+            fetch(s3Url)
+                .then(response => response.text())
+                .then(csvData => {
+                    // Parse CSV data
+                    var rows = csvData.split('\n');
+                    var xData = [];
+                    var yData = [];
+
+                    for (var i = 1; i < rows.length; i++) {
+                        var columns = rows[i].split(',');
+                        xData.push(columns[0]);
+                        yData.push(parseInt(columns[1]));
+                    }
+
+                    // Create a plot
+                    var trace = {
+                        x: xData,
+                        y: yData,
+                        type: 'bar'
+                    };
+
+                    var layout = {
+                        title: 'CSV Data Visualization'
+                    };
+
+                    // Display chart in the 'chartContainer' div
+                    Plotly.newPlot('chartContainer', [trace], layout);
+                })
+                .catch(error => console.error('Error fetching CSV data:', error));
+        }
+    </script>
+
+</body>
+</html>
